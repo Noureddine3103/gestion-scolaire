@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.school.gestion.controller.TeacherDashboardController"
+      styleClass="main-container">
+
+    <VBox styleClass="sidebar" prefWidth="220">
+        <Label text="GESTION SCOLAIRE" styleClass="sidebar-label"/>
+
+        <VBox spacing="2" VBox.vgrow="ALWAYS">
+            <Button text="Tableau de bord" styleClass="nav-button" onAction="#navigateToDashboard"/>
+            <Button text="Saisie des notes" styleClass="nav-button" onAction="#navigateToNotes"/>
+            <Button text="Mes élèves" styleClass="nav-button" onAction="#navigateToMesEleves"/>
+        </VBox>
+
+        <Button text="Déconnexion" styleClass="nav-button" onAction="#handleLogout"/>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS">
+        <HBox styleClass="header-bar">
+            <Label fx:id="headerTitle" text="Tableau de bord" styleClass="header-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="userLabel" text="" textFill="#757575"/>
+        </HBox>
+
+        <ScrollPane styleClass="content-area" fitToWidth="true">
+            <VBox fx:id="contentArea" spacing="20" prefWidth="950"/>
+        </ScrollPane>
+    </VBox>
+</HBox>

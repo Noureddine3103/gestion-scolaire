@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.school.gestion.controller.LoginController"
+      styleClass="login-container" alignment="CENTER">
+
+    <VBox styleClass="login-card" spacing="20" alignment="CENTER">
+        <Label text="Gestion Scolaire" styleClass="login-title"/>
+        <Label text="Connectez-vous à votre compte" textFill="#757575"/>
+
+        <VBox spacing="10" prefWidth="280">
+            <Label text="Nom d'utilisateur" textFill="#212121"/>
+            <TextField fx:id="usernameField" styleClass="text-field" promptText="Entrez votre nom d'utilisateur"/>
+
+            <Label text="Mot de passe" textFill="#212121"/>
+            <PasswordField fx:id="passwordField" styleClass="text-field" promptText="Entrez votre mot de passe"/>
+        </VBox>
+
+        <Label fx:id="errorLabel" text="" textFill="#f44336" visible="false"/>
+
+        <Button text="Se connecter" styleClass="btn" onAction="#handleLogin" prefWidth="280"/>
+    </VBox>
+</VBox>
