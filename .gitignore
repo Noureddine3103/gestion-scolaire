@@ -1,27 +1,7 @@
-# Java
-target/
+bin/
 *.class
-
-# Maven
-*.jar
-!.mvn/wrapper/maven-wrapper.jar
-
-# IDE
-.idea/
-*.iml
-.vscode/
-*.prefs
-.project
-.classpath
-.settings/
-
-# OS
+.codex_report_deps/
+*.tmp
+*.log
 .DS_Store
 Thumbs.db
-
-# Environment
-*.env
-.env.local
-
-# Logs
-*.log

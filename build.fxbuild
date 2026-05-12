@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<anttasks:AntTask xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:anttasks="http://www.eclipse.org/fx/ide/fxgraph/anttasks">
+  <deploy>
+    <application name="gestion-scolaire" mainclass="com.school.gestion.Launcher"/>
+  </deploy>
+</anttasks:AntTask>
