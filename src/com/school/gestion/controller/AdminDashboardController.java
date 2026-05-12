@@ -892,7 +892,6 @@ public class AdminDashboardController {
         );
 
         columns.getChildren().addAll(leftColumn, rightColumn);
-        ScrollPane formScroll = createFormScroll(columns);
 
         Button submitButton = new Button("Enregistrer l'eleve");
         submitButton.getStyleClass().add("btn");
@@ -938,7 +937,7 @@ public class AdminDashboardController {
             }
         });
 
-        formCard.getChildren().addAll(formScroll, submitButton);
+        formCard.getChildren().addAll(columns, submitButton);
 
         TableView<Eleve> table = new TableView<>();
         table.getStyleClass().add("premium-table");
@@ -951,7 +950,7 @@ public class AdminDashboardController {
             createColumn("Telephone", "telephone", 160)
         );
         table.setItems(FXCollections.observableArrayList(SchoolService.getAllEleves()));
-        configureDataTable(table, "Aucun eleve trouve.", 260);
+        configureDataTable(table, "Aucun eleve trouve.", 420);
         table.setRowFactory(tv -> {
             javafx.scene.control.TableRow<Eleve> row = new javafx.scene.control.TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -964,6 +963,7 @@ public class AdminDashboardController {
 
         VBox tableCard = new VBox(12);
         tableCard.getStyleClass().add("erp-card");
+        tableCard.setMinHeight(500);
         tableCard.getChildren().addAll(createErpSection("Liste des eleves"), table);
 
         VBox parentsCard = new VBox(12);
@@ -2650,14 +2650,17 @@ public class AdminDashboardController {
         ComboBox<String> niveauCombo = new ComboBox<>();
         niveauCombo.getItems().addAll(SchoolService.getAllNiveaux());
         niveauCombo.setPromptText("Niveau");
+        niveauCombo.setPrefWidth(240);
         ComboBox<Classe> classeCombo = new ComboBox<>();
         classeCombo.setPromptText("Classe");
+        classeCombo.setPrefWidth(280);
         ComboBox<Eleve> eleveCombo = new ComboBox<>();
         eleveCombo.setPromptText("Eleve");
-        eleveCombo.setPrefWidth(260);
+        eleveCombo.setPrefWidth(280);
         ComboBox<Integer> trimestreCombo = new ComboBox<>();
         trimestreCombo.getItems().addAll(1, 2, 3);
         trimestreCombo.setPromptText("Trimestre");
+        trimestreCombo.setPrefWidth(200);
         Button generateBtn = new Button("Generer");
         generateBtn.getStyleClass().add("btn");
         Button printBtn = new Button("Imprimer le bulletin");
@@ -2684,17 +2687,32 @@ public class AdminDashboardController {
 
         niveauCombo.setOnAction(e -> {
             if (niveauCombo.getValue() != null) {
-                classeCombo.getItems().setAll(SchoolService.getClassesByNiveau(niveauCombo.getValue()));
+                List<Classe> classes = SchoolService.getClassesByNiveau(niveauCombo.getValue());
+                classeCombo.getItems().setAll(classes);
                 eleveCombo.getItems().clear();
+                if (!classes.isEmpty()) {
+                    classeCombo.getSelectionModel().selectFirst();
+                }
             }
         });
         classeCombo.setOnAction(e -> {
             if (classeCombo.getValue() != null) {
-                eleveCombo.getItems().setAll(SchoolService.getElevesByClasse(classeCombo.getValue().getIdClasse()));
+                List<Eleve> eleves = SchoolService.getElevesByClasse(classeCombo.getValue().getIdClasse());
+                eleveCombo.getItems().setAll(eleves);
+                if (!eleves.isEmpty()) {
+                    eleveCombo.getSelectionModel().selectFirst();
+                }
             } else {
                 eleveCombo.getItems().clear();
             }
         });
+
+        if (!niveauCombo.getItems().isEmpty()) {
+            niveauCombo.getSelectionModel().selectFirst();
+        }
+        if (trimestreCombo.getValue() == null) {
+            trimestreCombo.setValue(1);
+        }
 
         generateBtn.setOnAction(e -> {
             if (classeCombo.getValue() == null || eleveCombo.getValue() == null || trimestreCombo.getValue() == null) {

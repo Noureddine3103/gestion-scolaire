@@ -100,11 +100,17 @@ public class TeacherDashboardController {
     }
 
     public void handleQuickSearch() {
-        navigateToMesEleves();
+        headerTitle.setText("Recherche");
+        contextBadge.setText("Recherche");
+        showSearchView();
+        activateNav(null, "Recherche");
     }
 
     public void handleQuickNotifications() {
-        navigateToEmplois();
+        headerTitle.setText("Notifications");
+        contextBadge.setText("Notifications");
+        showNotificationsView();
+        activateNav(null, "Notifications");
     }
 
     public void handleQuickMessages() {
@@ -160,6 +166,61 @@ public class TeacherDashboardController {
         schedulePreview.getChildren().add(scheduleTable);
 
         contentArea.getChildren().addAll(hero, stats, classesSection, matieresSection, schedulePreview);
+    }
+
+    private void showSearchView() {
+        VBox root = new VBox(18);
+        VBox panel = createPanel("Recherche globale", "Recherchez une classe, un eleve, une matiere ou une seance.");
+        TextField queryField = new TextField();
+        queryField.setPromptText("Tapez votre recherche...");
+        VBox results = new VBox(10);
+        Runnable refresh = () -> {
+            results.getChildren().clear();
+            String q = queryField.getText() == null ? "" : queryField.getText().trim().toLowerCase();
+            for (Classe classe : SchoolService.getTeacherClasses(teacherMatricule)) {
+                if (q.isBlank() || classe.getNomComplet().toLowerCase().contains(q)) {
+                    results.getChildren().add(createInfoRow("Classe", classe.getNomComplet(), classe.getEffectifActuel() + " eleves"));
+                }
+                for (Eleve eleve : SchoolService.getElevesByClasse(classe.getIdClasse())) {
+                    if (q.isBlank() || eleve.getNomComplet().toLowerCase().contains(q) || eleve.getMatricule().toLowerCase().contains(q)) {
+                        results.getChildren().add(createInfoRow("Eleve", eleve.getNomComplet(), classe.getNomComplet()));
+                    }
+                }
+            }
+            for (Matiere matiere : SchoolService.getTeacherMatieres(teacherMatricule)) {
+                if (q.isBlank() || matiere.getLibelle().toLowerCase().contains(q) || matiere.getCode().toLowerCase().contains(q)) {
+                    results.getChildren().add(createInfoRow("Matiere", matiere.getLibelle(), "Coef " + matiere.getCoefficient()));
+                }
+            }
+            if (results.getChildren().isEmpty()) {
+                results.getChildren().add(createEmptyState("Aucun resultat trouve."));
+            }
+        };
+        queryField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        refresh.run();
+        panel.getChildren().addAll(queryField, results);
+        root.getChildren().add(panel);
+        contentArea.getChildren().setAll(root);
+    }
+
+    private void showNotificationsView() {
+        VBox root = new VBox(18);
+        VBox panel = createPanel("Centre de notifications", "Synthese des elements a traiter.");
+        int classCount = SchoolService.getTeacherClassCount(teacherMatricule);
+        int matiereCount = SchoolService.getTeacherMatiereCount(teacherMatricule);
+        int seanceCount = SchoolService.getSeancesByEnseignant(teacherMatricule).size();
+        Button classes = new Button("Classes affectees : " + classCount);
+        classes.getStyleClass().add("btn-secondary");
+        classes.setOnAction(e -> navigateToMesEleves());
+        Button matieres = new Button("Matieres assurees : " + matiereCount);
+        matieres.getStyleClass().add("btn-secondary");
+        matieres.setOnAction(e -> navigateToDashboard());
+        Button seances = new Button("Seances planifiees : " + seanceCount);
+        seances.getStyleClass().add("btn-secondary");
+        seances.setOnAction(e -> navigateToEmplois());
+        panel.getChildren().addAll(classes, matieres, seances);
+        root.getChildren().add(panel);
+        contentArea.getChildren().setAll(root);
     }
 
     private void showNotesView() {
@@ -332,7 +393,7 @@ public class TeacherDashboardController {
             createColumn("Prenom", "prenom", 150),
             createColumn("Date de naissance", "dateNaissance", 160)
         );
-        configureDataTable(table, "Aucun eleve dans cette classe.", 320);
+        configureDataTable(table, "Aucun eleve dans cette classe.", 430);
 
         classeCombo.setOnAction(e -> {
             if (classeCombo.getValue() != null) {
@@ -667,6 +728,22 @@ public class TeacherDashboardController {
         subtitle.getStyleClass().add("mini-card-subtitle");
 
         row.getChildren().addAll(top, subtitle);
+        return row;
+    }
+
+    private HBox createInfoRow(String type, String titleText, String detailText) {
+        HBox row = new HBox(14);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.getStyleClass().add("soft-list-item");
+        Label badge = new Label(type);
+        badge.getStyleClass().add("soft-badge");
+        VBox body = new VBox(4);
+        Label title = new Label(titleText);
+        title.getStyleClass().add("mini-card-title");
+        Label detail = new Label(detailText == null || detailText.isBlank() ? "-" : detailText);
+        detail.getStyleClass().add("mini-card-subtitle");
+        body.getChildren().addAll(title, detail);
+        row.getChildren().addAll(badge, body);
         return row;
     }
 

@@ -12,6 +12,7 @@ import com.school.gestion.util.SessionManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -43,6 +44,7 @@ public class StudentDashboardController {
 
     private Eleve currentStudent;
     private Classe currentClasse;
+    private int selectedTrimestre = 1;
 
     public void initialize() {
         String matricule = SessionManager.getCurrentUser() != null
@@ -118,11 +120,17 @@ public class StudentDashboardController {
     }
 
     public void handleQuickSearch() {
-        navigateToCours();
+        headerSubtitle.setText("Recherche rapide dans vos cours, notes et messages.");
+        contextBadge.setText("Recherche");
+        showSearchView();
+        activate(null);
     }
 
     public void handleQuickNotifications() {
-        navigateToMessages();
+        headerSubtitle.setText("Toutes vos notifications importantes.");
+        contextBadge.setText("Notifications");
+        showNotificationsView();
+        activate(null);
     }
 
     public void handleQuickMessages() {
@@ -145,7 +153,7 @@ public class StudentDashboardController {
 
     private void showCoursView() {
         contentArea.getChildren().clear();
-        contentArea.getChildren().addAll(buildCoursesCard(), buildWeeklyScheduleCard());
+        contentArea.getChildren().add(buildCoursesCard());
     }
 
     private void showNotesView() {
@@ -203,6 +211,66 @@ public class StudentDashboardController {
         contentArea.getChildren().add(buildProfileDetailsCard());
     }
 
+    private void showSearchView() {
+        contentArea.getChildren().clear();
+        VBox card = baseCard("soft-card-wide", 20);
+        Label title = new Label("Recherche globale");
+        title.getStyleClass().add("soft-section-title");
+        TextField queryField = new TextField();
+        queryField.setPromptText("Rechercher un cours, une note, un message...");
+        VBox results = new VBox(10);
+        Runnable refresh = () -> {
+            results.getChildren().clear();
+            String q = queryField.getText() == null ? "" : queryField.getText().trim().toLowerCase(Locale.ROOT);
+            if (currentClasse != null) {
+                SchoolService.getSeancesByClasse(currentClasse.getIdClasse()).stream()
+                    .filter(s -> q.isBlank()
+                        || s.getMatiereLibelle().toLowerCase(Locale.ROOT).contains(q)
+                        || s.getJour().toLowerCase(Locale.ROOT).contains(q))
+                    .forEach(s -> results.getChildren().add(messageItem("Cours", s.getMatiereLibelle(), s.getJour() + " " + s.getHeureDebut() + " - " + s.getHeureFin())));
+                SchoolService.getNotesByClasseAndTrimestre(currentClasse.getIdClasse(), selectedTrimestre).stream()
+                    .filter(n -> currentStudent.getMatricule().equals(n.getMatricule()))
+                    .filter(n -> q.isBlank() || n.getCodeMatiere().toLowerCase(Locale.ROOT).contains(q))
+                    .forEach(n -> results.getChildren().add(messageItem("Note", n.getCodeMatiere(), String.format(Locale.US, "%.2f/20 - %s", n.getMoyenne(), getAppreciation(n.getMoyenne())))));
+            }
+            SchoolService.getMessagesForUser("ELEVE", null, currentStudent != null ? currentStudent.getMatricule() : null).stream()
+                .filter(m -> q.isBlank()
+                    || m.getSujet().toLowerCase(Locale.ROOT).contains(q)
+                    || m.getContenu().toLowerCase(Locale.ROOT).contains(q))
+                .forEach(m -> results.getChildren().add(messageItem("Message", m.getSujet(), m.getContenu())));
+            if (results.getChildren().isEmpty()) {
+                results.getChildren().add(new Label("Aucun resultat trouve."));
+            }
+        };
+        queryField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        refresh.run();
+        card.getChildren().addAll(title, queryField, results);
+        contentArea.getChildren().setAll(card);
+    }
+
+    private void showNotificationsView() {
+        contentArea.getChildren().clear();
+        VBox card = baseCard("soft-card-wide", 20);
+        Label title = new Label("Centre de notifications");
+        title.getStyleClass().add("soft-section-title");
+        int messageCount = currentStudent == null ? 0 : SchoolService.getMessagesForUser("ELEVE", null, currentStudent.getMatricule()).size();
+        long absenceCount = currentStudent == null ? 0 : SchoolService.getPresencesByEleve(currentStudent.getMatricule()).stream()
+            .filter(p -> !"PRESENT".equalsIgnoreCase(p.getStatut())).count();
+        int courseCount = currentClasse == null ? 0 : SchoolService.getSeancesByClasse(currentClasse.getIdClasse()).size();
+
+        Button messages = new Button("Messages recus : " + messageCount);
+        messages.getStyleClass().add("soft-outline-button");
+        messages.setOnAction(e -> navigateToMessages());
+        Button absences = new Button("Absences / retards : " + absenceCount);
+        absences.getStyleClass().add("soft-outline-button");
+        absences.setOnAction(e -> navigateToAbsences());
+        Button cours = new Button("Cours planifies : " + courseCount);
+        cours.getStyleClass().add("soft-outline-button");
+        cours.setOnAction(e -> navigateToEmploi());
+        card.getChildren().addAll(title, messages, absences, cours);
+        contentArea.getChildren().setAll(card);
+    }
+
     private VBox buildProfileCard() {
         VBox card = baseCard("soft-card-profile", 24);
         card.setPrefWidth(320);
@@ -212,15 +280,32 @@ public class StudentDashboardController {
         name.getStyleClass().add("soft-card-title");
         Label classe = new Label("Classe : " + (currentClasse != null ? currentClasse.getNomComplet() : "-"));
         classe.getStyleClass().add("soft-highlight-text");
-        card.getChildren().addAll(avatar, name, classe, new Label("Matricule : " + currentStudent.getMatricule()), new Label("Niveau : " + currentStudent.getNiveau()));
+        Button profileButton = new Button("Voir le profil complet");
+        profileButton.getStyleClass().add("soft-outline-button");
+        profileButton.setOnAction(e -> navigateToProfil());
+        card.getChildren().addAll(avatar, name, classe, new Label("Matricule : " + currentStudent.getMatricule()), new Label("Niveau : " + currentStudent.getNiveau()), profileButton);
         return card;
     }
 
     private VBox buildNotesCard() {
         VBox card = baseCard("soft-card-main", 22);
         card.setPrefWidth(470);
+        HBox header = new HBox(12);
+        header.setAlignment(Pos.CENTER_LEFT);
         Label title = new Label("Mes notes");
         title.getStyleClass().add("soft-section-title");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        ComboBox<Integer> trimestreCombo = new ComboBox<>();
+        trimestreCombo.getItems().addAll(1, 2, 3);
+        trimestreCombo.setValue(selectedTrimestre);
+        trimestreCombo.setOnAction(e -> {
+            if (trimestreCombo.getValue() != null) {
+                selectedTrimestre = trimestreCombo.getValue();
+                showNotesView();
+            }
+        });
+        header.getChildren().addAll(title, spacer, trimestreCombo);
         GridPane grid = new GridPane();
         grid.setHgap(14);
         grid.setVgap(10);
@@ -228,18 +313,26 @@ public class StudentDashboardController {
         addHeader(grid, "Moyenne", 1);
         addHeader(grid, "Appreciation", 2);
 
-        List<Note> notes = currentClasse == null ? List.of() : SchoolService.getNotesByClasseAndTrimestre(currentClasse.getIdClasse(), 1).stream()
+        List<Note> notes = currentClasse == null ? List.of() : SchoolService.getNotesByClasseAndTrimestre(currentClasse.getIdClasse(), selectedTrimestre).stream()
             .filter(note -> currentStudent.getMatricule().equals(note.getMatricule()))
             .toList();
+        double total = 0.0;
         int row = 1;
         for (Note note : notes) {
             double moyenne = note.getMoyenne();
+            total += moyenne;
             grid.add(bodyCell(note.getCodeMatiere()), 0, row);
             grid.add(bodyCell(String.format(Locale.US, "%.2f", moyenne)), 1, row);
             grid.add(bodyCell(getAppreciation(moyenne)), 2, row);
             row++;
         }
-        card.getChildren().addAll(title, grid);
+        double moyenneGenerale = notes.isEmpty() ? 0.0 : total / notes.size();
+        Label summary = new Label("Moyenne generale : " + String.format(Locale.US, "%.2f/20", moyenneGenerale));
+        summary.getStyleClass().add("soft-highlight-text");
+        Button bulletinButton = new Button("Voir le bulletin complet");
+        bulletinButton.getStyleClass().add("soft-outline-button");
+        bulletinButton.setOnAction(e -> navigateToNotes());
+        card.getChildren().addAll(header, grid, summary, bulletinButton);
         return card;
     }
 
@@ -260,9 +353,17 @@ public class StudentDashboardController {
 
     private VBox buildMessagesCard() {
         VBox card = baseCard("soft-card-wide", 20);
+        HBox header = new HBox(12);
+        header.setAlignment(Pos.CENTER_LEFT);
         Label title = new Label("Messages des enseignants");
         title.getStyleClass().add("soft-section-title");
-        card.getChildren().add(title);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Button allMessagesButton = new Button("Voir tous les messages");
+        allMessagesButton.getStyleClass().add("soft-link-button");
+        allMessagesButton.setOnAction(e -> navigateToMessages());
+        header.getChildren().addAll(title, spacer, allMessagesButton);
+        card.getChildren().add(header);
         List<MessageInterne> messages = currentStudent == null
             ? List.of()
             : SchoolService.getMessagesForUser("ELEVE", null, currentStudent.getMatricule());
@@ -278,7 +379,7 @@ public class StudentDashboardController {
 
     private VBox buildWeeklyScheduleCard() {
         VBox card = baseCard("soft-card-wide", 20);
-        Label title = new Label("Planning hebdomadaire");
+        Label title = new Label("Emploi du temps");
         title.getStyleClass().add("soft-section-title");
         card.getChildren().add(title);
         if (currentClasse != null) {

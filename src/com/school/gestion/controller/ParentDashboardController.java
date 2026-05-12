@@ -53,6 +53,8 @@ public class ParentDashboardController {
     private Parent currentParent;
     private List<Eleve> linkedStudents = new ArrayList<>();
     private Eleve selectedStudent;
+    private int selectedTrimestre = 1;
+    private String currentView = "dashboard";
 
     public void initialize() {
         currentParent = SessionManager.getCurrentUser() != null
@@ -71,6 +73,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToDashboard() {
+        currentView = "dashboard";
         headerSubtitle.setText("Voici un apercu de l'activite scolaire aujourd'hui.");
         contextBadge.setText("Tableau de bord");
         showDashboard();
@@ -78,6 +81,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToEleves() {
+        currentView = "eleves";
         headerSubtitle.setText("Consultez les informations completes des enfants lies a votre compte.");
         contextBadge.setText("Eleves");
         showElevesView();
@@ -85,6 +89,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToCours() {
+        currentView = "cours";
         headerSubtitle.setText("Retrouvez les cours suivis et les matieres du moment.");
         contextBadge.setText("Cours");
         showCoursView();
@@ -92,6 +97,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToNotes() {
+        currentView = "notes";
         headerSubtitle.setText("Visualisez les resultats detailes par matiere.");
         contextBadge.setText("Notes");
         showNotesView();
@@ -99,6 +105,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToDevoirs() {
+        currentView = "devoirs";
         headerSubtitle.setText("Suivez les devoirs et les rappels pedagogiques.");
         contextBadge.setText("Devoirs");
         showDevoirsView();
@@ -106,6 +113,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToEmploi() {
+        currentView = "emploi";
         headerSubtitle.setText("Parcourez l'emploi du temps complet.");
         contextBadge.setText("Emploi du temps");
         showEmploiView();
@@ -113,6 +121,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToAbsences() {
+        currentView = "absences";
         headerSubtitle.setText("Consultez les absences et les justifications.");
         contextBadge.setText("Absences");
         showAbsencesView();
@@ -120,6 +129,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToCommunications() {
+        currentView = "communications";
         headerSubtitle.setText("Lisez les communications des enseignants et de l'etablissement.");
         contextBadge.setText("Communications");
         showCommunicationsView();
@@ -127,6 +137,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToFacturation() {
+        currentView = "facturation";
         headerSubtitle.setText("Suivi simplifie des frais et paiements.");
         contextBadge.setText("Facturation");
         showFacturationView();
@@ -134,6 +145,7 @@ public class ParentDashboardController {
     }
 
     public void navigateToParametres() {
+        currentView = "parametres";
         headerSubtitle.setText("Ajustez les preferences du compte parent.");
         contextBadge.setText("Parametres");
         showParametresView();
@@ -145,11 +157,15 @@ public class ParentDashboardController {
     }
 
     public void handleQuickSearch() {
-        navigateToEleves();
+        showSearchView();
+        activate(null);
+        contextBadge.setText("Recherche");
     }
 
     public void handleQuickNotifications() {
-        navigateToCommunications();
+        showNotificationsView();
+        activate(null);
+        contextBadge.setText("Notifications");
     }
 
     public void handleQuickMessages() {
@@ -157,6 +173,7 @@ public class ParentDashboardController {
     }
 
     private void showDashboard() {
+        currentView = "dashboard";
         contentArea.getChildren().clear();
 
         HBox top = new HBox(20);
@@ -173,6 +190,7 @@ public class ParentDashboardController {
     }
 
     private void showElevesView() {
+        currentView = "eleves";
         contentArea.getChildren().clear();
         VBox page = new VBox(20);
         page.getChildren().add(buildInvitationLinkCard());
@@ -183,6 +201,7 @@ public class ParentDashboardController {
     }
 
     private void showCoursView() {
+        currentView = "cours";
         contentArea.getChildren().clear();
         VBox page = new VBox(20);
         page.getChildren().add(buildStudentSelector());
@@ -192,6 +211,7 @@ public class ParentDashboardController {
     }
 
     private void showNotesView() {
+        currentView = "notes";
         contentArea.getChildren().clear();
         VBox page = new VBox(20);
         page.getChildren().add(buildStudentSelector());
@@ -200,6 +220,7 @@ public class ParentDashboardController {
     }
 
     private void showDevoirsView() {
+        currentView = "devoirs";
         contentArea.getChildren().clear();
         VBox card = baseCard("soft-card-wide", 20);
         card.getChildren().add(new Label("Devoirs et suivis"));
@@ -209,15 +230,17 @@ public class ParentDashboardController {
     }
 
     private void showEmploiView() {
+        currentView = "emploi";
         contentArea.getChildren().clear();
         VBox page = new VBox(20);
         page.getChildren().add(buildStudentSelector());
         page.getChildren().add(buildUpcomingCoursesCard());
-        page.getChildren().add(buildWeeklyScheduleCard());
+        page.getChildren().add(buildFullScheduleCard());
         contentArea.getChildren().add(page);
     }
 
     private void showAbsencesView() {
+        currentView = "absences";
         contentArea.getChildren().clear();
         VBox page = new VBox(20);
         page.getChildren().add(buildStudentSelector());
@@ -226,6 +249,7 @@ public class ParentDashboardController {
     }
 
     private void showCommunicationsView() {
+        currentView = "communications";
         contentArea.getChildren().clear();
         VBox page = new VBox(20);
         page.getChildren().add(buildStudentSelector());
@@ -234,6 +258,7 @@ public class ParentDashboardController {
     }
 
     private void showFacturationView() {
+        currentView = "facturation";
         contentArea.getChildren().clear();
         VBox page = new VBox(20);
         page.getChildren().add(buildStudentSelector());
@@ -242,6 +267,7 @@ public class ParentDashboardController {
     }
 
     private void showParametresView() {
+        currentView = "parametres";
         contentArea.getChildren().clear();
         VBox card = baseCard("soft-card-wide", 20);
         card.getChildren().add(new Label("Parametres du compte"));
@@ -268,6 +294,78 @@ public class ParentDashboardController {
         contentArea.getChildren().setAll(card);
     }
 
+    private void showSearchView() {
+        currentView = "search";
+        contentArea.getChildren().clear();
+        VBox card = baseCard("soft-card-wide", 20);
+        Label title = new Label("Recherche globale");
+        title.getStyleClass().add("soft-section-title");
+        TextField queryField = new TextField();
+        queryField.setPromptText("Rechercher un eleve, une matiere, un message...");
+        VBox results = new VBox(10);
+
+        Runnable refresh = () -> {
+            results.getChildren().clear();
+            String q = queryField.getText() == null ? "" : queryField.getText().trim().toLowerCase(Locale.ROOT);
+            linkedStudents.stream()
+                .filter(e -> q.isBlank() || e.getNomComplet().toLowerCase(Locale.ROOT).contains(q) || e.getMatricule().toLowerCase(Locale.ROOT).contains(q))
+                .forEach(e -> {
+                    Classe classe = SchoolService.getClasseForEleve(e.getMatricule());
+                    HBox row = messageItem("Eleve", e.getNomComplet(), "Matricule " + e.getMatricule(), classe != null ? classe.getNomComplet() : "-");
+                    row.setOnMouseClicked(ev -> {
+                        selectedStudent = e;
+                        navigateToEleves();
+                    });
+                    results.getChildren().add(row);
+                });
+            if (selectedStudent != null) {
+                Classe classe = SchoolService.getClasseForEleve(selectedStudent.getMatricule());
+                List<Seance> seances = classe == null ? List.of() : SchoolService.getSeancesByClasse(classe.getIdClasse());
+                seances.stream()
+                    .filter(s -> q.isBlank()
+                        || s.getMatiereLibelle().toLowerCase(Locale.ROOT).contains(q)
+                        || s.getJour().toLowerCase(Locale.ROOT).contains(q))
+                    .limit(8)
+                    .forEach(s -> results.getChildren().add(messageItem("Cours", s.getMatiereLibelle(), s.getJour(), s.getHeureDebut() + " - " + s.getHeureFin())));
+            }
+            if (results.getChildren().isEmpty()) {
+                results.getChildren().add(new Label("Aucun resultat trouve."));
+            }
+        };
+        queryField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        refresh.run();
+        card.getChildren().addAll(title, queryField, results);
+        contentArea.getChildren().setAll(card);
+    }
+
+    private void showNotificationsView() {
+        currentView = "notifications";
+        contentArea.getChildren().clear();
+        VBox card = baseCard("soft-card-wide", 20);
+        Label title = new Label("Centre de notifications");
+        title.getStyleClass().add("soft-section-title");
+
+        int messageCount = SchoolService.getMessagesForUser("PARENT", currentParent != null ? currentParent.getIdParent() : null,
+            selectedStudent != null ? selectedStudent.getMatricule() : null).size();
+        long absenceCount = selectedStudent == null ? 0 : SchoolService.getPresencesByEleve(selectedStudent.getMatricule()).stream()
+            .filter(p -> !"PRESENT".equalsIgnoreCase(p.getStatut())).count();
+        int unpaidCount = selectedStudent == null ? 0 : (int) SchoolService.getFraisByEleve(selectedStudent.getMatricule()).stream()
+            .filter(f -> !"PAYE".equalsIgnoreCase(f.getStatut())).count();
+
+        Button messages = new Button("Messages enseignants : " + messageCount);
+        messages.getStyleClass().add("soft-outline-button");
+        messages.setOnAction(e -> navigateToCommunications());
+        Button absences = new Button("Absences / retards : " + absenceCount);
+        absences.getStyleClass().add("soft-outline-button");
+        absences.setOnAction(e -> navigateToAbsences());
+        Button frais = new Button("Frais a suivre : " + unpaidCount);
+        frais.getStyleClass().add("soft-outline-button");
+        frais.setOnAction(e -> navigateToFacturation());
+
+        card.getChildren().addAll(title, messages, absences, frais);
+        contentArea.getChildren().setAll(card);
+    }
+
     private VBox buildStudentSelector() {
         VBox box = new VBox(8);
         box.setPadding(new Insets(4, 4, 0, 4));
@@ -277,7 +375,7 @@ public class ParentDashboardController {
             combo.setMaxWidth(280);
             combo.setOnAction(e -> {
                 selectedStudent = combo.getValue();
-                showDashboard();
+                refreshCurrentView();
             });
             box.getChildren().add(combo);
         }
@@ -311,6 +409,7 @@ public class ParentDashboardController {
         card.getChildren().add(detailLine("Statut", "Actif"));
         Button button = new Button("Voir le profil complet");
         button.getStyleClass().add("soft-outline-button");
+        button.setOnAction(e -> navigateToEleves());
         card.getChildren().add(button);
         return card;
     }
@@ -335,8 +434,13 @@ public class ParentDashboardController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         ComboBox<Integer> trimestre = new ComboBox<>(FXCollections.observableArrayList(1, 2, 3));
-        trimestre.setValue(1);
-        trimestre.setOnAction(e -> showDashboard());
+        trimestre.setValue(selectedTrimestre);
+        trimestre.setOnAction(e -> {
+            if (trimestre.getValue() != null) {
+                selectedTrimestre = trimestre.getValue();
+                refreshCurrentView();
+            }
+        });
         header.getChildren().addAll(title, spacer, trimestre);
 
         GridPane notesGrid = new GridPane();
@@ -348,7 +452,7 @@ public class ParentDashboardController {
         addHeader(notesGrid, "Appreciation", 2);
 
         Classe classe = SchoolService.getClasseForEleve(selectedStudent.getMatricule());
-        List<Note> notes = classe == null ? List.of() : SchoolService.getNotesByClasseAndTrimestre(classe.getIdClasse(), trimestre.getValue()).stream()
+        List<Note> notes = classe == null ? List.of() : SchoolService.getNotesByClasseAndTrimestre(classe.getIdClasse(), selectedTrimestre).stream()
             .filter(note -> selectedStudent.getMatricule().equals(note.getMatricule()))
             .toList();
 
@@ -366,11 +470,12 @@ public class ParentDashboardController {
         double moyenneGenerale = notes.isEmpty() ? 0.0 : total / notes.size();
         HBox summary = new HBox(24);
         summary.getChildren().add(summaryPill("Moyenne generale", String.format(Locale.US, "%.2f/20", moyenneGenerale)));
-        summary.getChildren().add(summaryPill("Rang", computeRankText(selectedStudent, classe, trimestre.getValue())));
+        summary.getChildren().add(summaryPill("Rang", computeRankText(selectedStudent, classe, selectedTrimestre)));
         summary.getChildren().add(summaryPill("Effectif", classe != null ? classe.getEffectifActuel() + " eleves" : "-"));
 
         Button button = new Button("Voir le bulletin complet");
         button.getStyleClass().add("soft-outline-button");
+        button.setOnAction(e -> navigateToNotes());
         card.getChildren().addAll(header, notesGrid, summary, button);
         return card;
     }
@@ -393,6 +498,7 @@ public class ParentDashboardController {
 
         Button button = new Button("Voir tout l'emploi du temps");
         button.getStyleClass().add("soft-link-button");
+        button.setOnAction(e -> navigateToEmploi());
         card.getChildren().add(button);
         return card;
     }
@@ -406,6 +512,7 @@ public class ParentDashboardController {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         Button button = new Button("Voir tous les messages");
         button.getStyleClass().add("soft-link-button");
+        button.setOnAction(e -> navigateToCommunications());
         head.getChildren().addAll(title, spacer, button);
         card.getChildren().add(head);
 
@@ -644,9 +751,9 @@ public class ParentDashboardController {
         return card;
     }
 
-    private VBox buildWeeklyScheduleCard() {
+    private VBox buildFullScheduleCard() {
         VBox card = baseCard("soft-card-wide", 20);
-        Label title = new Label("Planning hebdomadaire");
+        Label title = new Label("Emploi du temps complet");
         title.getStyleClass().add("soft-section-title");
         card.getChildren().add(title);
         if (selectedStudent == null) {
@@ -664,6 +771,23 @@ public class ParentDashboardController {
                 seance.getClasseNom()
             )));
         return card;
+    }
+
+    private void refreshCurrentView() {
+        switch (currentView) {
+            case "eleves" -> showElevesView();
+            case "cours" -> showCoursView();
+            case "notes" -> showNotesView();
+            case "devoirs" -> showDevoirsView();
+            case "emploi" -> showEmploiView();
+            case "absences" -> showAbsencesView();
+            case "communications" -> showCommunicationsView();
+            case "facturation" -> showFacturationView();
+            case "parametres" -> showParametresView();
+            case "search" -> showSearchView();
+            case "notifications" -> showNotificationsView();
+            default -> showDashboard();
+        }
     }
 
     private VBox baseCard(String styleClass, double padding) {

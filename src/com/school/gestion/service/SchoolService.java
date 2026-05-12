@@ -150,15 +150,17 @@ public class SchoolService {
     public static List<Classe> getClassesByNiveau(String niveau) {
         List<Classe> classes = new ArrayList<>();
         String query = "SELECT c.*, (SELECT COUNT(*) FROM INSCRIPTION i WHERE i.idClasse = c.idClasse AND i.statut = 'ACTIF') as effectif " +
-                      "FROM CLASSE c WHERE c.niveau = ? ORDER BY c.nom";
+                      "FROM CLASSE c ORDER BY c.niveau, c.nom";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, niveau);
-            ResultSet rs = stmt.executeQuery();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            String wanted = cleanLabel(niveau);
             while (rs.next()) {
                 Classe classe = extractClasse(rs);
-                classe.setEffectifActuel(rs.getInt("effectif"));
-                classes.add(classe);
+                if (wanted == null || wanted.equalsIgnoreCase(classe.getNiveau())) {
+                    classe.setEffectifActuel(rs.getInt("effectif"));
+                    classes.add(classe);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
