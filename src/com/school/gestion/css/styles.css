@@ -1892,3 +1892,73 @@
     -fx-background-color: #c6924b;
     -fx-background-radius: 10;
 }
+
+/* Login readability override. Keep this at the end so older dark-login rules cannot override it. */
+.login-shell {
+    -fx-background-color: linear-gradient(to right, #fffaf1 0%, #fff6e8 58%, #f1dfc5 100%);
+}
+
+.login-showcase {
+    -fx-background-color: transparent;
+}
+
+.login-brand {
+    -fx-text-fill: #c2472d;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+.login-hero-title {
+    -fx-text-fill: #151515;
+    -fx-font-size: 40px;
+    -fx-font-weight: 900;
+}
+
+.login-hero-copy {
+    -fx-text-fill: #52616b;
+    -fx-font-size: 16px;
+}
+
+.login-highlight-card {
+    -fx-background-color: rgba(255,255,255,0.78);
+    -fx-border-color: #ead9c1;
+    -fx-effect: dropshadow(gaussian, rgba(80,56,24,0.10), 18, 0, 0, 6);
+}
+
+.login-panel-title {
+    -fx-text-fill: #1d2939;
+    -fx-font-size: 19px;
+    -fx-font-weight: 900;
+}
+
+.login-feature {
+    -fx-text-fill: #475467;
+    -fx-font-size: 14px;
+}
+
+.login-footnote {
+    -fx-text-fill: #667085;
+}
+
+.login-form-shell {
+    -fx-background-color: rgba(255,255,255,0.58);
+}
+
+.login-card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ead9c1;
+    -fx-effect: dropshadow(gaussian, rgba(80,56,24,0.14), 22, 0, 0, 8);
+}
+
+.login-title {
+    -fx-text-fill: #111827;
+}
+
+.login-subtitle,
+.support-label {
+    -fx-text-fill: #667085;
+}
+
+.support-value {
+    -fx-text-fill: #c2472d;
+}

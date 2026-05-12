@@ -2684,29 +2684,57 @@ public class AdminDashboardController {
         VBox resultPanel = createPanel("Synthese trimestrielle", "Tableau multi-matieres par eleve.");
         final Node[] printableNode = new Node[1];
         final Eleve[] generatedEleve = new Eleve[1];
+        final Classe[] generatedClasse = new Classe[1];
+
+        Runnable loadAllBulletinChoices = () -> {
+            List<Classe> classes = SchoolService.getAllClasses();
+            List<Eleve> eleves = SchoolService.getAllEleves();
+            classeCombo.getItems().setAll(classes);
+            eleveCombo.getItems().setAll(eleves);
+            if (!classes.isEmpty()) {
+                classeCombo.getSelectionModel().selectFirst();
+            }
+            if (!eleves.isEmpty()) {
+                eleveCombo.getSelectionModel().selectFirst();
+            }
+        };
 
         niveauCombo.setOnAction(e -> {
             if (niveauCombo.getValue() != null) {
                 List<Classe> classes = SchoolService.getClassesByNiveau(niveauCombo.getValue());
+                if (classes.isEmpty()) {
+                    classes = SchoolService.getAllClasses();
+                }
                 classeCombo.getItems().setAll(classes);
                 eleveCombo.getItems().clear();
                 if (!classes.isEmpty()) {
                     classeCombo.getSelectionModel().selectFirst();
+                } else {
+                    eleveCombo.getItems().setAll(SchoolService.getAllEleves());
                 }
             }
         });
         classeCombo.setOnAction(e -> {
             if (classeCombo.getValue() != null) {
                 List<Eleve> eleves = SchoolService.getElevesByClasse(classeCombo.getValue().getIdClasse());
+                if (eleves.isEmpty()) {
+                    eleves = SchoolService.getAllEleves().stream()
+                        .filter(eleve -> {
+                            Classe classe = SchoolService.getClasseForEleve(eleve.getMatricule());
+                            return classe != null && classe.getIdClasse() == classeCombo.getValue().getIdClasse();
+                        })
+                        .toList();
+                }
                 eleveCombo.getItems().setAll(eleves);
                 if (!eleves.isEmpty()) {
                     eleveCombo.getSelectionModel().selectFirst();
                 }
             } else {
-                eleveCombo.getItems().clear();
+                eleveCombo.getItems().setAll(SchoolService.getAllEleves());
             }
         });
 
+        loadAllBulletinChoices.run();
         if (!niveauCombo.getItems().isEmpty()) {
             niveauCombo.getSelectionModel().selectFirst();
         }
@@ -2715,14 +2743,20 @@ public class AdminDashboardController {
         }
 
         generateBtn.setOnAction(e -> {
-            if (classeCombo.getValue() == null || eleveCombo.getValue() == null || trimestreCombo.getValue() == null) {
+            Eleve selectedEleve = eleveCombo.getValue();
+            Classe selectedClasse = classeCombo.getValue();
+            if (selectedClasse == null && selectedEleve != null) {
+                selectedClasse = SchoolService.getClasseForEleve(selectedEleve.getMatricule());
+            }
+            if (selectedClasse == null || selectedEleve == null || trimestreCombo.getValue() == null) {
                 AlertUtils.showWarning("Selection requise", "Choisissez une classe, un eleve et un trimestre.");
                 return;
             }
             resultPanel.getChildren().removeIf(node -> node instanceof ScrollPane || node instanceof TableView || node.getStyleClass().contains("profile-page"));
-            Node bulletin = buildSingleBulletinNode(eleveCombo.getValue(), classeCombo.getValue(), trimestreCombo.getValue());
+            Node bulletin = buildSingleBulletinNode(selectedEleve, selectedClasse, trimestreCombo.getValue());
             printableNode[0] = bulletin;
-            generatedEleve[0] = eleveCombo.getValue();
+            generatedEleve[0] = selectedEleve;
+            generatedClasse[0] = selectedClasse;
             resultPanel.getChildren().add(bulletin);
             printBtn.setDisable(false);
             sendMailBtn.setDisable(false);
@@ -2738,11 +2772,11 @@ public class AdminDashboardController {
         });
 
         sendMailBtn.setOnAction(e -> {
-            if (generatedEleve[0] == null || classeCombo.getValue() == null || trimestreCombo.getValue() == null) {
+            if (generatedEleve[0] == null || generatedClasse[0] == null || trimestreCombo.getValue() == null) {
                 AlertUtils.showWarning("Envoi", "Generez d'abord un bulletin.");
                 return;
             }
-            sendBulletinToParent(generatedEleve[0], classeCombo.getValue(), trimestreCombo.getValue());
+            sendBulletinToParent(generatedEleve[0], generatedClasse[0], trimestreCombo.getValue());
         });
 
         root.getChildren().addAll(filters, resultPanel);
