@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.school.gestion.controller.AdminDashboardController"
+      styleClass="soft-shell">
+
+    <VBox styleClass="soft-sidebar">
+        <HBox alignment="CENTER_LEFT" spacing="14" styleClass="soft-brand-row">
+            <Label text="SE" styleClass="soft-logo-badge"/>
+            <VBox spacing="2">
+                <Label text="Soft Education" styleClass="soft-brand"/>
+                <Label text="Systeme de gestion scolaire" styleClass="soft-subbrand"/>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="10" VBox.vgrow="ALWAYS" styleClass="soft-nav-box">
+            <Button fx:id="dashboardNavButton" text="⌂  Tableau de bord" styleClass="soft-nav-button" onAction="#navigateToDashboard" maxWidth="Infinity"/>
+            <Button fx:id="elevesNavButton" text="◌  Eleves" styleClass="soft-nav-button" onAction="#navigateToEleves" maxWidth="Infinity"/>
+            <Button fx:id="enseignantsNavButton" text="◍  Enseignants" styleClass="soft-nav-button" onAction="#navigateToEnseignants" maxWidth="Infinity"/>
+            <Button fx:id="usersNavButton" text="◎  Comptes" styleClass="soft-nav-button" onAction="#navigateToUsers" maxWidth="Infinity"/>
+            <Button fx:id="classesNavButton" text="▣  Classes" styleClass="soft-nav-button" onAction="#navigateToClasses" maxWidth="Infinity"/>
+            <Button fx:id="matieresNavButton" text="✎  Matieres" styleClass="soft-nav-button" onAction="#navigateToMatieres" maxWidth="Infinity"/>
+            <Button fx:id="emploisNavButton" text="☷  Emploi du temps" styleClass="soft-nav-button" onAction="#navigateToEmplois" maxWidth="Infinity"/>
+            <Button fx:id="inscriptionsNavButton" text="⊕  Inscriptions" styleClass="soft-nav-button" onAction="#navigateToInscriptions" maxWidth="Infinity"/>
+            <Button fx:id="notesNavButton" text="☑  Notes" styleClass="soft-nav-button" onAction="#navigateToNotes" maxWidth="Infinity"/>
+            <Button fx:id="bulletinsNavButton" text="▤  Bulletins" styleClass="soft-nav-button" onAction="#navigateToBulletins" maxWidth="Infinity"/>
+        </VBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="soft-profile-chip">
+            <Label text="AD" styleClass="soft-user-avatar"/>
+            <VBox spacing="2">
+                <Label fx:id="userLabel" text="" styleClass="soft-profile-name"/>
+                <Label text="Administrateur" styleClass="soft-profile-role"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS" styleClass="soft-main-area">
+        <HBox styleClass="soft-topbar" alignment="CENTER_LEFT">
+            <VBox spacing="4">
+                <Label fx:id="headerTitle" text="Bonjour Administrateur" styleClass="soft-greeting"/>
+                <Label text="Voici un apercu de l'activite scolaire aujourd'hui." styleClass="soft-greeting-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="soft-top-actions">
+                <Button text="⌕" styleClass="soft-action-icon" onAction="#handleQuickSearch"/>
+                <Button text="◔" styleClass="soft-action-icon" onAction="#handleQuickNotifications"/>
+                <Label fx:id="contextBadge" text="Tableau de bord" styleClass="soft-badge"/>
+                <Label text="AD" styleClass="soft-user-avatar large"/>
+                <Button text="Deconnexion" styleClass="btn-secondary" onAction="#handleLogout"/>
+            </HBox>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS" styleClass="soft-workspace-scroll">
+            <VBox fx:id="contentArea" spacing="20" styleClass="soft-workspace"/>
+        </ScrollPane>
+    </VBox>
+</HBox>

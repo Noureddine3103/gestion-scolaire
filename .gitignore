@@ -1,0 +1,7 @@
+bin/
+*.class
+.codex_report_deps/
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
