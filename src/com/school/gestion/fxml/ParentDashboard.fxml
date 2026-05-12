@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.school.gestion.controller.ParentDashboardController"
+      styleClass="soft-shell">
+
+    <VBox styleClass="soft-sidebar">
+        <HBox alignment="CENTER_LEFT" spacing="14" styleClass="soft-brand-row">
+            <Label text="SE" styleClass="soft-logo-badge"/>
+            <VBox spacing="2">
+                <Label text="Soft Education" styleClass="soft-brand"/>
+                <Label text="Systeme de gestion scolaire" styleClass="soft-subbrand"/>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="10" VBox.vgrow="ALWAYS" styleClass="soft-nav-box">
+            <Button fx:id="dashboardNavButton" text="⌂  Tableau de bord" styleClass="soft-nav-button soft-nav-button-active" onAction="#navigateToDashboard" maxWidth="Infinity"/>
+            <Button fx:id="elevesNavButton" text="◌  Eleves" styleClass="soft-nav-button" onAction="#navigateToEleves" maxWidth="Infinity"/>
+            <Button fx:id="coursNavButton" text="▤  Cours" styleClass="soft-nav-button" onAction="#navigateToCours" maxWidth="Infinity"/>
+            <Button fx:id="notesNavButton" text="☑  Notes" styleClass="soft-nav-button" onAction="#navigateToNotes" maxWidth="Infinity"/>
+            <Button fx:id="devoirsNavButton" text="✎  Devoirs" styleClass="soft-nav-button" onAction="#navigateToDevoirs" maxWidth="Infinity"/>
+            <Button fx:id="emploisNavButton" text="☷  Emploi du temps" styleClass="soft-nav-button" onAction="#navigateToEmploi" maxWidth="Infinity"/>
+            <Button fx:id="absencesNavButton" text="◔  Absences" styleClass="soft-nav-button" onAction="#navigateToAbsences" maxWidth="Infinity"/>
+            <Button fx:id="communicationsNavButton" text="✉  Communications" styleClass="soft-nav-button" onAction="#navigateToCommunications" maxWidth="Infinity"/>
+            <Button fx:id="facturationNavButton" text="◫  Facturation" styleClass="soft-nav-button" onAction="#navigateToFacturation" maxWidth="Infinity"/>
+            <Button fx:id="parametresNavButton" text="⚙  Parametres" styleClass="soft-nav-button" onAction="#navigateToParametres" maxWidth="Infinity"/>
+        </VBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="soft-profile-chip">
+            <Label text="PA" styleClass="soft-user-avatar"/>
+            <VBox spacing="2">
+                <Label fx:id="userLabel" text="Parent" styleClass="soft-profile-name"/>
+                <Label fx:id="profileRoleLabel" text="Parent" styleClass="soft-profile-role"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS" styleClass="soft-main-area">
+        <HBox alignment="CENTER_LEFT" styleClass="soft-topbar">
+            <VBox spacing="4">
+                <Label fx:id="headerTitle" text="Bonjour" styleClass="soft-greeting"/>
+                <Label fx:id="headerSubtitle" text="Voici un apercu de l'activite scolaire aujourd'hui." styleClass="soft-greeting-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="soft-top-actions">
+                <Button text="⌕" styleClass="soft-action-icon" onAction="#handleQuickSearch"/>
+                <Button text="◔" styleClass="soft-action-icon" onAction="#handleQuickNotifications"/>
+                <Label fx:id="contextBadge" text="Parent" styleClass="soft-badge"/>
+                <Label text="PA" styleClass="soft-user-avatar large"/>
+                <Button text="Deconnexion" styleClass="btn-secondary" onAction="#handleLogout"/>
+            </HBox>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS" styleClass="soft-workspace-scroll">
+            <VBox fx:id="contentArea" spacing="20" styleClass="soft-workspace"/>
+        </ScrollPane>
+    </VBox>
+</HBox>

@@ -1,127 +1,118 @@
-# Gestion Scolaire - Système de Gestion Scolaire
+# Gestion Scolaire Pro - Nordic Academia
 
-Application JavaFX de gestion scolaire pour établissements d'enseignement.
+Application JavaFX de gestion scolaire multi-role, preparee pour Eclipse en projet Java classique, sans Maven.
 
-## Fonctionnalités
+## Theme visuel
 
-### Espace Administrateur
-- **Tableau de bord** - Statistiques globales (élèves, classes, enseignants)
-- **Gestion des élèves** - Ajout, modification, recherche d'élèves
-- **Gestion des enseignants** - Ajout et gestion des enseignants
-- **Niveaux et Classes** - Création de classes avec capacité max 20 élèves
-- **Inscriptions** - Affectation des élèves aux classes (contrôle de capacité automatique)
-- **Saisie des notes** - Attribution des notes par trimestre
-- **Génération des bulletins** - Création de bulletins de notes
+- Fond: `#F7F7F2`
+- Sidebar: `#1E2A44`
+- Accent: `#C9A961`
+- Texte principal: `#1A1A1A`
+- Texte secondaire: `#6B7280`
+- Succes: `#2E7D5B`
+- Erreur: `#C0392B`
+- Police: `Inter`, `SF Pro`, fallback `Segoe UI`
 
-### Espace Enseignant
-- **Tableau de bord** - Vue d'ensemble de ses classes et matières
-- **Saisie des notes** - Grille de saisie intuitive (Devoir, Examen, Composition)
-- **Mes élèves** - Consultation des élèves par classe
+## Roles disponibles
 
-## Architecture
+- Administrateur
+- Enseignant
+- Parent
+- Eleve
 
-```
-src/
-├── main/
-│   ├── java/com/school/gestion/
-│   │   ├── model/          # Objets métier (Eleve, Enseignant, Classe, Note, etc.)
-│   │   ├── view/           # Vues FXML
-│   │   ├── controller/     # Logique métier (Login, Admin, Teacher)
-│   │   ├── service/       # Services JDBC (SchoolService)
-│   │   ├── database/      # Connexion BD (DatabaseConnection)
-│   │   └── util/          # Utilitaires (SessionManager, AlertUtils)
-│   └── resources/
-│       ├── com/school/gestion/
-│       │   ├── css/       # Styles CSS
-│       │   └── fxml/      # Fichiers FXML
-│       └── images/
-└── sql/
-    └── schema.sql         # Script DDL (SQL Server)
-```
+## Fonctionnalites principales
 
-## Prérequis
+- Authentification BCrypt avec routage par role
+- Verrouillage temporaire du compte apres 5 echecs
+- Dashboard distinct pour chaque role
+- CRUD eleves, enseignants, classes, matieres, parents, utilisateurs, annees scolaires
+- Affectations enseignant / classe / matiere
+- Codes d'invitation parent-eleve
+- Notes, bulletins, emploi du temps
+- Presences, absences, retards, justification parent
+- Messagerie interne
+- Frais de scolarite
+- Exports CSV
+- Sauvegarde logique locale
+- Audit log des actions sensibles
 
-- **Java 17+**
-- **IDE**: Eclipse (recommandé) ou IntelliJ IDEA
-- **Maven 3.8+**
-- **Base de données**: XAMPP (MySQL / MariaDB) ou SQL Server
-- **JavaFX 21**
+## Prerequis
 
-## Installation (Eclipse & XAMPP)
+- Java JDK 21
+- Eclipse IDE
+- MySQL ou MariaDB (XAMPP compatible)
+- JavaFX SDK 21
 
-### 1. Importer le projet dans Eclipse
-1. Ouvrez Eclipse et allez dans **File > Import...**
-2. Sélectionnez **Maven > Existing Maven Projects** et cliquez sur Next.
-3. Parcourez votre système pour sélectionner le dossier `projet federee` (où se trouve le fichier `pom.xml`).
-4. Cliquez sur **Finish**. Eclipse va télécharger toutes les dépendances automatiquement.
+## Ouvrir dans Eclipse
 
-### 2. Configuration de la Base de Données (XAMPP)
+1. Ouvrir Eclipse
+2. `File > Open Projects from File System...`
+3. Choisir le dossier `gestion-scolaire-pro-extracted`
+4. Faire `Project > Clean`
+5. Ouvrir  
+   `src/com/school/gestion/Launcher.java`
+6. `Run As > Java Application`
 
-1. Ouvrez **XAMPP Control Panel** et démarrez le module **MySQL** (et Apache si vous utilisez phpMyAdmin).
-2. Ouvrez phpMyAdmin (http://localhost/phpmyadmin) ou votre client SQL préféré.
-3. Créez une nouvelle base de données nommée `gestion_scolaire`.
-4. Importez le fichier **`src/sql/schema_mysql.sql`** dans cette nouvelle base de données.
-   - *Note: Ce script contient toutes les tables, triggers de capacité et les données de test.*
+## Base de donnees
 
-### 3. Exécution du Projet dans Eclipse
+Base par defaut:
 
-1. Faites un clic droit sur le fichier **`MainApp.java`** (`src/main/java/com/school/gestion/MainApp.java`).
-2. Sélectionnez **Run As > Java Application**.
-   - *Le projet est préconfiguré pour se connecter à `jdbc:mysql://localhost:3306/gestion_scolaire` avec l'utilisateur `root` et sans mot de passe (configuration XAMPP par défaut).*
+- URL: `jdbc:mysql://localhost:3306/gestion_scolaire?serverTimezone=UTC`
+- User: `root`
+- Password: vide
 
----
+Variables optionnelles:
 
-## Configuration Alternative (SQL Server)
+- `GESTION_DB_URL`
+- `GESTION_DB_USER`
+- `GESTION_DB_PASSWORD`
 
-Si vous préférez utiliser SQL Server au lieu de XAMPP :
-1. Importez le fichier `src/sql/schema.sql` dans SQL Server.
-2. Modifiez les variables d'environnement ou le fichier `DatabaseConnection.java` pour utiliser le driver MSSQL.
+## Scripts SQL
 
-## Connexion par Défaut
+- Schema principal:  
+  [C:\Users\Noure\.openclaw\workspace\gestion-scolaire-pro-extracted\src\sql\schema.sql](C:\Users\Noure\.openclaw\workspace\gestion-scolaire-pro-extracted\src\sql\schema.sql)
+- Donnees de demo:  
+  [C:\Users\Noure\.openclaw\workspace\gestion-scolaire-pro-extracted\src\sql\data_demo.sql](C:\Users\Noure\.openclaw\workspace\gestion-scolaire-pro-extracted\src\sql\data_demo.sql)
+- Script tout-en-un existant:  
+  [C:\Users\Noure\.openclaw\workspace\gestion-scolaire-pro-extracted\src\sql\schema_mysql.sql](C:\Users\Noure\.openclaw\workspace\gestion-scolaire-pro-extracted\src\sql\schema_mysql.sql)
 
-| Rôle | Nom d'utilisateur | Mot de passe |
-|------|------------------|--------------|
-| Administrateur | `admin` | `admin123` |
+Ordre recommande:
 
-## Règles Métier
+1. creer la base `gestion_scolaire`
+2. executer `schema.sql`
+3. executer `data_demo.sql`
 
-1. **Capacité des classes** - Maximum 20 élèves par classe
-2. **Rôles** - Administrateur et Enseignant (accès différencié)
-3. **Années scolaires** - Données liées à l'année active
-4. **Trimestres** - 3 trimestres par année (1, 2, 3)
-5. **Notes** - Comprises entre 0 et 20
+## Comptes de demo
 
-## Technologies
+- Admin: `admin / admin123`
+- Enseignant: `ahmed.bennani / admin123`
+- Enseignant: `salma.idrissi / admin123`
+- Enseignant: `youssef.alaoui / admin123`
+- Parent: `parent.diallo / admin123`
+- Parent: `parent.konate / admin123`
+- Eleve: `E001 / admin123`
+- Eleve: `E003 / admin123`
 
-- **Frontend**: JavaFX 21, FXML, CSS3
-- **Backend**: Java 17
-- **Base de données**: SQL Server, JDBC
-- **Sécurité**: BCrypt (hashing mots de passe)
-- **Build**: Maven
+## Exports et sauvegarde
 
-## Structure de la Base de Données
+Les exports admin sont generes dans:
 
-| Table | Description |
-|-------|-------------|
-| `UTILISATEUR` | Comptes utilisateurs (admin/enseignant) |
-| `ELEVE` | Informations élèves |
-| `ENSEIGNANT` | Informations enseignants |
-| `NIVEAU` | Niveaux scolaires (1ère, 2ème, 3ème année) |
-| `CLASSE` | Classes avec capacité |
-| `MATIERE` | Matières enseignées |
-| `INSCRIPTION` | Inscriptions année/classe |
-| `CLASSE_ENSEIGNANT` | Relation enseignant-matière-classe |
-| `NOTE` | Notes par trimestre |
-| `ANNEE_SCOLAIRE` | Années scolaires |
+`C:\Users\<VotreNom>\Documents\gestion-scolaire-exports`
 
-## Capture d'Écran
+Contenu actuel:
 
-L'application dispose d'une interface moderne avec:
-- Barre latérale de navigation
-- Tableaux de données triables
-- Indicateurs visuels de capacité
-- Grilles de saisie ergonomiques
+- `eleves-export.csv`
+- `notes-export.csv`
+- `sauvegarde-gestion-scolaire.txt`
 
-## Licence
+## Bibliotheques utilisees
 
-Projet académique - Educational Use
+- JavaFX 21
+- MySQL Connector/J
+- jBCrypt
+
+## Notes
+
+- Le projet est compilable en Java 21.
+- Le module PDF complet type iText et les graphiques JFreeChart ne sont pas encore ajoutes comme dependances natives du projet.
+- Le theme CSS et les dashboards ont ete alignes vers la direction `Nordic Academia`.
